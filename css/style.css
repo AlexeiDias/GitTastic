@@ -1,0 +1,18 @@
+body {
+    background-image: url("../images/5.gif");
+}
+
+.card-body {
+    background-image: url("../images/viva.gif");
+
+} 
+
+.card-footer {
+    background-image: url("../images/giphy.gif");
+
+}
+
+.card-header {
+    background-image: url("../images/5.gif");
+}
+
