@@ -7,148 +7,73 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <title>GifTastic!</title>
   </head>
   <body>
-    
+
     <div class="card text-center">
         <div class="card-header">
-            <h1>Hello, GifTastic!</h1>
+            <h1>Hello, it's GifTastic!</h1>
         </div>
         <div class="card-body">
           <h5 class="card-title">Think, type and push the button.</h5>
           <p class="card-text">your imagination in GifForms</p>
-          <!-- <form id="gif-form">
-            <label for="thought-input"></label>
-            <input type="text" id="gif-input"> -->
-            <form id="movie-form">
-                    <label for="movie-input"></label>
-                    <input type="text" id="movie-input">
-                    <input id="add-movie" type="submit" value="Add a Movie" class="btn btn-primary">
           
+            <form id="gif-form">
+                    <label for="gif-input"></label>
+                    <input type="text" id="gif-input">
+                    <input id="add-gif" type="submit" value="Make a Gif" class="btn btn-primary">
+
         </div>
          </form>
         <div id="buttons-view" class="card-footer text-muted">
-            
-            <!-- <button data-gif="cat">meow</button>
-            <button data-gif="dog">woof</button>
-            <button data-gif="bird">chirp</button> -->
+
            
+
         </div>
       </div>
       <div id="gifs-appear-here"></div>
 
-      
+
       <script type="text/javascript">
-         // Initial array of movies
-      var movies = ["The Matrix", "The Notebook", "Mr. Nobody", "The Lion King"];
+         
+      var gifs = ["surf", "dance", "music", "camping"];
+function alertGifName() {
+  var gifName = $(this).attr("data-name");
+var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=wslWpWhssAgYDK6zVXacBDsacT47flr4&limit=10&q=" + gifName;
 
-// Generic function for capturing the movie name from the data-attribute
-function alertMovieName() {
-
-  // console.log(this);
-  var movieName = $(this).attr("data-name");
-  // var movieName = $(this).data("name");
-
-  // console.log(movieName);
-}
-
-// Function for displaying movie data
-function renderButtons() {
-
-  // Deleting the movies prior to adding new movies
-  // (this is necessary otherwise we will have repeat buttons)
-  $("#buttons-view").empty();
-  $("#movie-input").val("");
-
-
-  // Looping through the array of movies
-  for (var i = 0; i < movies.length; i++) {
-
-    // Then dynamicaly generating buttons for each movie in the array
-    // This code $("<button>") is all jQuery needs to create the start and end tag. (<button></button>)
-    var newButton = $("<button>");
-    // Adding a class of movie to our button
-    newButton.addClass("movie");
-    // Adding a data-attribute
-    newButton.attr("data-name", movies[i]);
-    // Providing the initial button text
-    newButton.text(movies[i]);
-    // Adding the button to the HTML
-    $("#buttons-view").append(newButton);
-  }
-}
-
-// This function handles events where one button is clicked
-$("#add-movie").on("click", function(event) {
-  // Preventing the buttons default behavior when clicked (which is submitting a form)
-  event.preventDefault();
-  // This line grabs the input from the textbox
-  var movie = $("#movie-input").val().trim();
-
-  // Adding the movie from the textbox to our array
-  movies.push(movie);
-
-  // Calling renderButtons which handles the processing of our movie array
-  renderButtons();
-
-});
-// renderButtons();
-// Function for displaying the movie info
-// We're adding a click event listener to all elements with the class "movie"
-// We're adding the event listener to the document because it will work for dynamically generated elements
-// $(".movies").on("click", alertMovieName);
- // will only add listeners to elements that are on the page at that time
-// $(document).on("click", ".movie", alertMovieName);
-
-// Calling the renderButtons function to display the intial buttons
-renderButtons();
-//////////////////////////////////////////////////
- // Event listener for our cat-button
- $("#buttons-view").on("click", function() {
-     // clear screen procedure
-     $("#gifs-appear-here").empty();
-
-// Storing our giphy API URL for a random cat image
-var queryURL = "https://api.giphy.com/v1/gifs/random?api_key=wslWpWhssAgYDK6zVXacBDsacT47flr4&limit=10";
-// "https://api.giphy.com/v1/gifs/search?q=" +
-//         animal + "&api_key=wslWpWhssAgYDK6zVXacBDsacT47flr4&limit=10";
-// Perfoming an AJAX GET request to our queryURL
 $.ajax({
   url: queryURL,
   method: "GET"
 })
-
-// After the data from the AJAX request comes back
   .then(function(response) {
     console.log(response);
-  // Saving the image_original_url property
-    var imageUrl = response.data.image_original_url;
+    var results = response.data
+  for (i =0; i < results.length; i++) {
+var gifDiv = $("<div>");
 
-    // Creating and storing an image tag
-    var catImage = $("<img>");
+    var p = $("<p>").text("Rating:" + results[i].rating);
+    var gifImage = $("<img>");
+    gifImage.attr("src", results[i].images.fixed_height_still.url);
+    gifImage.attr("data-still", results[i].images.fixed_height_still.url);
+    gifImage.attr("data-animate", results[i].images.fixed_height.url);
+    gifImage.attr("data-state", "still");
+    gifImage.addClass("gifState");
 
-    // Setting the catImage src attribute to imageUrl
-    catImage.attr("src", imageUrl);
-    catImage.addClass("gif");
-    catImage.attr("alt", "cat image");
 
-    // Prepending the catImage to the images div
-    $("#gifs-appear-here").prepend(catImage);
+
+    gifDiv.append(p);
     
-                
-  });
-});
+    gifDiv.append(gifImage);
+    $("#gifs-appear-here").prepend(gifDiv);
+  } 
 
-$(".gif").on("click", function() {
-      // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
-      // $(this).attr("data-state", "animate");
+  $(".gifState").on("click", function() {
+  console.log("you clicked a gif");
       var state = $(this).attr("data-state");
-      // If the clicked image's state is still, update its src attribute to what its data-animate value is.
-      // Then, set the image's data-state to animate
-      // Else set src to the data-still value
+      console.log(this);
       if (state === "still") {
         var animate = $(this).attr("data-animate");
         $(this).attr("src", animate);
@@ -158,15 +83,44 @@ $(".gif").on("click", function() {
         $(this).attr("data-state", "still");
       }
     });
+                
+  });
+}
+function renderButtons() {
+  $("#buttons-view").empty();
+  $("#gif-input").val("");
+  for (var i = 0; i < gifs.length; i++) {
+
+    
+    var newButton = $("<button>");
+    newButton.addClass("gif");
+    newButton.attr("data-name", gifs[i]);
+    newButton.text(gifs[i]);
+    $("#buttons-view").append(newButton);
+  }
+}
+$("#add-gif").on("click", function(event) {
+  event.preventDefault();
+  var gify = $("#gif-input").val().trim();
+  gifs.push(gify);
+  renderButtons();
+});
+
+renderButtons();
+$(document).on("click", ".gif", alertGifName) 
+
+
+
+ 
+
       
 </script>
 
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- Popper.js, then Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <!-- <script rel="JavaScript" href="js/app.js"> </script> -->
 </body>
-</html>
+</html> 
